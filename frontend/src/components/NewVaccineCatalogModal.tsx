@@ -227,3 +227,4 @@ export const NewVaccineCatalogModal: React.FC<NewVaccineCatalogModalProps> = ({
     </div>
   );
 };
+

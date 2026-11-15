@@ -208,3 +208,4 @@ export const NewVaccineBatchModal: React.FC<NewVaccineBatchModalProps> = ({
     </div>
   );
 };
+
