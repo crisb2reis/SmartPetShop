@@ -4,7 +4,8 @@ from app.services import (
     service_service,
     appointment_service,
     health_record_service,
-    alert_service
+    alert_service,
+    vaccine_service
 )
 
 __all__ = [
@@ -13,5 +14,6 @@ __all__ = [
     "service_service",
     "appointment_service",
     "health_record_service",
-    "alert_service"
+    "alert_service",
+    "vaccine_service"
 ]

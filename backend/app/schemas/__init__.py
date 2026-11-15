@@ -33,6 +33,14 @@ from app.schemas.auth import (
     LoginRequest,
     TokenResponse
 )
+from app.schemas.vaccine import (
+    VaccineCatalogResponse,
+    VaccineBatchResponse,
+    PetVaccinationRecordCreate,
+    PetVaccinationRecordUpdate,
+    PetVaccinationRecordResponse,
+    PetVaccinationCardResponse
+)
 
 __all__ = [
     "TutorCreate",
@@ -67,4 +75,10 @@ __all__ = [
     "UserResponse",
     "LoginRequest",
     "TokenResponse",
+    "VaccineCatalogResponse",
+    "VaccineBatchResponse",
+    "PetVaccinationRecordCreate",
+    "PetVaccinationRecordUpdate",
+    "PetVaccinationRecordResponse",
+    "PetVaccinationCardResponse",
 ]
