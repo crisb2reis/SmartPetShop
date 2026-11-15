@@ -19,6 +19,8 @@ import {
   VaccineBatchItem,
   Pet
 } from '../services/api';
+import { NewVaccineCatalogModal } from './NewVaccineCatalogModal';
+import { NewVaccineBatchModal } from './NewVaccineBatchModal';
 
 interface AddVaccineModalProps {
   isOpen: boolean;
@@ -46,6 +48,10 @@ export const AddVaccineModal: React.FC<AddVaccineModalProps> = ({
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Quick modals state
+  const [isNewVaccineOpen, setIsNewVaccineOpen] = useState(false);
+  const [isNewBatchOpen, setIsNewBatchOpen] = useState(false);
 
   // 1. Carregar catálogo oficial de acordo com a espécie do pet
   useEffect(() => {
@@ -93,6 +99,16 @@ export const AddVaccineModal: React.FC<AddVaccineModalProps> = ({
         .catch((err) => console.error('Erro ao buscar lotes:', err));
     }
   }, [selectedCatalogId, applicationDate, catalogs]);
+
+  const handleVaccineCreated = (newCat: VaccineCatalogItem) => {
+    setCatalogs((prev) => [newCat, ...prev]);
+    setSelectedCatalogId(newCat.id);
+  };
+
+  const handleBatchCreated = (newBatch: VaccineBatchItem) => {
+    setBatches((prev) => [newBatch, ...prev]);
+    setSelectedBatchId(newBatch.id);
+  };
 
   if (!isOpen || !pet) return null;
 
@@ -168,9 +184,18 @@ export const AddVaccineModal: React.FC<AddVaccineModalProps> = ({
 
           {/* Seleção do Catálogo Oficial */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-              Vacina Oficial ({pet.species}) *
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                Vacina Oficial ({pet.species}) *
+              </label>
+              <button
+                type="button"
+                onClick={() => setIsNewVaccineOpen(true)}
+                className="text-[11px] font-bold text-emerald-600 hover:text-emerald-700 hover:underline"
+              >
+                + Nova Vacina
+              </button>
+            </div>
             <div className="relative">
               <Syringe className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none" />
               <select
@@ -195,9 +220,18 @@ export const AddVaccineModal: React.FC<AddVaccineModalProps> = ({
 
           {/* Seleção de Lote do Estoque */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-              Lote / Ampola em Estoque
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                Lote / Ampola em Estoque
+              </label>
+              <button
+                type="button"
+                onClick={() => setIsNewBatchOpen(true)}
+                className="text-[11px] font-bold text-teal-600 hover:text-teal-700 hover:underline"
+              >
+                + Novo Lote Ampola
+              </button>
+            </div>
             <div className="relative">
               <Layers className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none" />
               <select
@@ -320,6 +354,20 @@ export const AddVaccineModal: React.FC<AddVaccineModalProps> = ({
           </div>
         </form>
       </div>
+
+      {/* Quick Creation Modals */}
+      <NewVaccineCatalogModal
+        isOpen={isNewVaccineOpen}
+        onClose={() => setIsNewVaccineOpen(false)}
+        onSuccess={handleVaccineCreated}
+      />
+
+      <NewVaccineBatchModal
+        isOpen={isNewBatchOpen}
+        defaultCatalogId={selectedCatalogId}
+        onClose={() => setIsNewBatchOpen(false)}
+        onSuccess={handleBatchCreated}
+      />
     </div>
   );
 };

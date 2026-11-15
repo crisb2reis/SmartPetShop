@@ -7,7 +7,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.services import vaccine_service, pet_service
 from app.schemas.vaccine import (
+    VaccineCatalogCreate,
     VaccineCatalogResponse,
+    VaccineBatchCreate,
     VaccineBatchResponse,
     PetVaccinationRecordCreate,
     PetVaccinationRecordUpdate,
@@ -34,20 +36,55 @@ async def list_vaccine_catalogs(
     return await vaccine_service.get_vaccine_catalogs(db, species=species)
 
 
+@router.post(
+    "/vaccine-catalogs/",
+    response_model=VaccineCatalogResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Cadastrar nova vacina no catálogo",
+    description="Cadastra um novo imunizante com protocolo de doses, idade recomendada e periodicidade de reforço."
+)
+async def create_vaccine_catalog(
+    catalog_in: VaccineCatalogCreate,
+    db: AsyncSession = Depends(get_db)
+):
+    return await vaccine_service.create_vaccine_catalog(db, catalog_in)
+
+
 # -------------------------------------------------------------
-# 2. Lotes de Vacinas (Estoque e Rastreabilidade)
+# 2. Lotes de Vacinas (Estoque e Rastreabilidade de Ampolas)
 # -------------------------------------------------------------
 @router.get(
     "/vaccine-batches/",
     response_model=List[VaccineBatchResponse],
-    summary="Listar lotes ativos de vacinas",
-    description="Retorna os lotes de vacina ativos em estoque para seleção no ato da aplicação."
+    summary="Listar lotes de vacinas / ampolas",
+    description="Retorna os lotes de vacina em estoque para seleção ou gestão de ampolas."
 )
 async def list_vaccine_batches(
     catalog_id: Optional[uuid.UUID] = Query(None, description="Filtrar por vacina do catálogo"),
+    active_only: bool = Query(False, description="Filtrar apenas lotes ativos"),
     db: AsyncSession = Depends(get_db)
 ):
-    return await vaccine_service.get_active_batches(db, catalog_id=catalog_id)
+    return await vaccine_service.get_all_batches(db, catalog_id=catalog_id, active_only=active_only)
+
+
+@router.post(
+    "/vaccine-batches/",
+    response_model=VaccineBatchResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Cadastrar novo lote de ampola de vacina",
+    description="Registra a entrada de um lote de ampolas com número do lote, fabricante e validade."
+)
+async def create_vaccine_batch(
+    batch_in: VaccineBatchCreate,
+    db: AsyncSession = Depends(get_db)
+):
+    catalog = await vaccine_service.get_vaccine_catalog_by_id(db, batch_in.vaccine_catalog_id)
+    if not catalog:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Vacina informada não encontrada no catálogo."
+        )
+    return await vaccine_service.create_vaccine_batch(db, batch_in)
 
 
 # -------------------------------------------------------------

@@ -44,6 +44,7 @@ class VaccineBatchResponse(VaccineBatchBase):
     tenant_id: uuid.UUID
     created_at: datetime
     updated_at: datetime
+    vaccine_catalog: Optional[VaccineCatalogResponse] = None
 
     model_config = ConfigDict(from_attributes=True)
 

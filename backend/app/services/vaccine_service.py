@@ -7,7 +7,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.vaccine import VaccineCatalog, VaccineBatch, PetVaccinationRecord
 from app.models.pet import Pet
+from app.models.organization import Organization
 from app.schemas.vaccine import (
+    VaccineCatalogCreate,
+    VaccineBatchCreate,
     PetVaccinationRecordCreate,
     PetVaccinationRecordUpdate,
     PetVaccinationCardResponse
@@ -41,12 +44,37 @@ async def get_vaccine_catalog_by_id(
     return result.scalar_one_or_none()
 
 
+async def create_vaccine_catalog(
+    db: AsyncSession,
+    data: VaccineCatalogCreate,
+    tenant_id: Optional[uuid.UUID] = None
+) -> VaccineCatalog:
+    catalog = VaccineCatalog(
+        tenant_id=tenant_id,
+        species=data.species.upper(),
+        name=data.name.strip(),
+        type=data.type.upper(),
+        recommended_age_weeks=data.recommended_age_weeks,
+        doses_required=data.doses_required,
+        booster_interval_days=data.booster_interval_days,
+        description=data.description.strip() if data.description else None
+    )
+    db.add(catalog)
+    await db.commit()
+    await db.refresh(catalog)
+    return catalog
+
+
 async def get_active_batches(
     db: AsyncSession,
     catalog_id: Optional[uuid.UUID] = None,
     tenant_id: Optional[uuid.UUID] = None
 ) -> List[VaccineBatch]:
-    query = select(VaccineBatch).where(VaccineBatch.active.is_(True))
+    query = (
+        select(VaccineBatch)
+        .options(selectinload(VaccineBatch.vaccine_catalog))
+        .where(VaccineBatch.active.is_(True))
+    )
     if catalog_id:
         query = query.where(VaccineBatch.vaccine_catalog_id == catalog_id)
     if tenant_id:
@@ -54,6 +82,57 @@ async def get_active_batches(
     query = query.order_by(VaccineBatch.expiration_date.asc())
     result = await db.execute(query)
     return list(result.scalars().all())
+
+
+async def get_all_batches(
+    db: AsyncSession,
+    catalog_id: Optional[uuid.UUID] = None,
+    active_only: bool = False,
+    tenant_id: Optional[uuid.UUID] = None
+) -> List[VaccineBatch]:
+    query = select(VaccineBatch).options(selectinload(VaccineBatch.vaccine_catalog))
+    if active_only:
+        query = query.where(VaccineBatch.active.is_(True))
+    if catalog_id:
+        query = query.where(VaccineBatch.vaccine_catalog_id == catalog_id)
+    if tenant_id:
+        query = query.where(VaccineBatch.tenant_id == tenant_id)
+    query = query.order_by(VaccineBatch.expiration_date.asc())
+    result = await db.execute(query)
+    return list(result.scalars().all())
+
+
+async def create_vaccine_batch(
+    db: AsyncSession,
+    data: VaccineBatchCreate,
+    tenant_id: Optional[uuid.UUID] = None
+) -> VaccineBatch:
+    if not tenant_id:
+        org_result = await db.execute(select(Organization.id).limit(1))
+        tenant_id = org_result.scalar_one_or_none()
+        if not tenant_id:
+            raise ValueError("Nenhuma organização encontrada para associar ao lote.")
+
+    batch = VaccineBatch(
+        tenant_id=tenant_id,
+        vaccine_catalog_id=data.vaccine_catalog_id,
+        batch_number=data.batch_number.strip(),
+        manufacturer=data.manufacturer.strip(),
+        expiration_date=data.expiration_date,
+        active=data.active
+    )
+    db.add(batch)
+    await db.commit()
+    await db.refresh(batch)
+
+    # Recarrega com relacionamento
+    query = (
+        select(VaccineBatch)
+        .where(VaccineBatch.id == batch.id)
+        .options(selectinload(VaccineBatch.vaccine_catalog))
+    )
+    res = await db.execute(query)
+    return res.scalar_one()
 
 
 async def get_batch_by_id(

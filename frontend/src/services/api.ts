@@ -49,6 +49,7 @@ export interface ServiceItem {
   price: number;
   duration_minutes: number;
   active: boolean;
+  description?: string;
 }
 
 export interface AppointmentItem {
@@ -127,8 +128,30 @@ export const updateAppointmentStatus = async (
 };
 
 // Services & Pets & Tutors
-export const fetchServices = async (): Promise<ServiceItem[]> => {
-  const response = await api.get('/services/', { params: { active_only: true } });
+export const fetchServices = async (category?: string, activeOnly: boolean = true): Promise<ServiceItem[]> => {
+  const params: Record<string, any> = { active_only: activeOnly };
+  if (category) params.category = category;
+  const response = await api.get('/services/', { params });
+  return response.data;
+};
+
+export const createService = async (data: {
+  name: string;
+  category: string;
+  price: number;
+  duration_minutes: number;
+  description?: string;
+  active?: boolean;
+}): Promise<ServiceItem> => {
+  const response = await api.post('/services/', data);
+  return response.data;
+};
+
+export const updateService = async (
+  serviceId: string,
+  data: Partial<ServiceItem>
+): Promise<ServiceItem> => {
+  const response = await api.put(`/services/${serviceId}`, data);
   return response.data;
 };
 
@@ -225,6 +248,7 @@ export interface VaccineBatchItem {
   manufacturer: string;
   expiration_date: string;
   active: boolean;
+  vaccine_catalog?: VaccineCatalogItem;
 }
 
 export interface VaccineRecordItem {
@@ -264,10 +288,34 @@ export const fetchVaccineCatalogs = async (species?: string): Promise<VaccineCat
   return response.data;
 };
 
-export const fetchVaccineBatches = async (catalogId?: string): Promise<VaccineBatchItem[]> => {
-  const params: Record<string, string> = {};
+export const createVaccineCatalog = async (data: {
+  species: string;
+  name: string;
+  type: string;
+  recommended_age_weeks: number;
+  doses_required: number;
+  booster_interval_days: number;
+  description?: string;
+}): Promise<VaccineCatalogItem> => {
+  const response = await api.post('/vaccine-catalogs/', data);
+  return response.data;
+};
+
+export const fetchVaccineBatches = async (catalogId?: string, activeOnly: boolean = false): Promise<VaccineBatchItem[]> => {
+  const params: Record<string, any> = { active_only: activeOnly };
   if (catalogId) params.catalog_id = catalogId;
   const response = await api.get('/vaccine-batches/', { params });
+  return response.data;
+};
+
+export const createVaccineBatch = async (data: {
+  vaccine_catalog_id: string;
+  batch_number: string;
+  manufacturer: string;
+  expiration_date: string;
+  active?: boolean;
+}): Promise<VaccineBatchItem> => {
+  const response = await api.post('/vaccine-batches/', data);
   return response.data;
 };
 

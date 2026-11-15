@@ -2,16 +2,18 @@ import { useState, useEffect } from 'react';
 import {
   Calendar,
   Users,
-  MessageSquare
+  MessageSquare,
+  Layers
 } from 'lucide-react';
 import { Header } from './components/Header';
 import { AppointmentsDashboard } from './components/AppointmentsDashboard';
 import { ChatWidget } from './components/ChatWidget';
 import { AlertsWidget } from './components/AlertsWidget';
 import { TutorsPetsView } from './components/TutorsPetsView';
+import { CatalogManagementView } from './components/CatalogManagementView';
 import { fetchSystemStatus } from './services/api';
 
-type TabType = 'agenda' | 'ia' | 'cadastros';
+type TabType = 'agenda' | 'ia' | 'cadastros' | 'catalogo';
 
 export default function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -81,6 +83,18 @@ export default function App() {
             <Users className="w-4 h-4" />
             <span>Tutores & Pets</span>
           </button>
+
+          <button
+            onClick={() => setActiveTab('catalogo')}
+            className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
+              activeTab === 'catalogo'
+                ? 'bg-emerald-600 text-white shadow-sm'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            }`}
+          >
+            <Layers className="w-4 h-4" />
+            <span>Catálogo & Adicionais</span>
+          </button>
         </div>
 
         {/* Tab Contents */}
@@ -98,6 +112,8 @@ export default function App() {
         )}
 
         {activeTab === 'cadastros' && <TutorsPetsView />}
+
+        {activeTab === 'catalogo' && <CatalogManagementView />}
       </main>
 
       {/* Footer */}
