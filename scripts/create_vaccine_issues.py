@@ -173,3 +173,4 @@ Automatizar o envio de lembretes e notificações aos tutores quando a vacina do
 
 if __name__ == "__main__":
     main()
+

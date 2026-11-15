@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from app.models.appointment import Appointment
     from app.models.health_record import HealthRecord
     from app.models.alert import Alert
+    from app.models.vaccine import PetVaccinationRecord
 
 
 class Pet(TimestampedModel):
@@ -43,6 +44,7 @@ class Pet(TimestampedModel):
     appointments: Mapped[List["Appointment"]] = relationship("Appointment", back_populates="pet", cascade="all, delete-orphan")
     health_records: Mapped[List["HealthRecord"]] = relationship("HealthRecord", back_populates="pet", cascade="all, delete-orphan")
     alerts: Mapped[List["Alert"]] = relationship("Alert", back_populates="pet", cascade="all, delete-orphan")
+    vaccination_records: Mapped[List["PetVaccinationRecord"]] = relationship("PetVaccinationRecord", back_populates="pet", cascade="all, delete-orphan")
 
     def __repr__(self) -> str:
         return f"<Pet id={self.id} name='{self.name}' species='{self.species}'>"

@@ -9,6 +9,7 @@ from app.models.appointment import Appointment
 from app.models.health_record import HealthRecord
 from app.models.alert import Alert
 from app.models.chat import ChatSession, ChatMessage
+from app.models.vaccine import VaccineCatalog, VaccineBatch, PetVaccinationRecord
 
 __all__ = [
     "Base",
@@ -23,4 +24,7 @@ __all__ = [
     "Alert",
     "ChatSession",
     "ChatMessage",
+    "VaccineCatalog",
+    "VaccineBatch",
+    "PetVaccinationRecord",
 ]
