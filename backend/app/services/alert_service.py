@@ -90,3 +90,4 @@ async def update_alert_status(db: AsyncSession, alert: Alert, new_status: str) -
     db.add(alert)
     await db.flush()
     return await get_alert(db, alert.id, load_relations=True)
+

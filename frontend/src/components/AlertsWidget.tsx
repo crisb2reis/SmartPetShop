@@ -150,3 +150,4 @@ export const AlertsWidget: React.FC = () => {
     </div>
   );
 };
+

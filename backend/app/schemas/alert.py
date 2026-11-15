@@ -38,3 +38,4 @@ class AlertScanResult(BaseModel):
     total_pets_analyzed: int
     alerts_generated: int
     alerts: List[AlertResponse]
+

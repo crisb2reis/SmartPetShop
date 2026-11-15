@@ -61,3 +61,4 @@ async def update_health_record(
 async def delete_health_record(db: AsyncSession, record: HealthRecord) -> None:
     await db.delete(record)
     await db.flush()
+

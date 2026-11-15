@@ -76,3 +76,4 @@ async def update_alert_status(
             detail="Alerta não encontrado."
         )
     return await alert_service.update_alert_status(db, alert, status_in.status)
+

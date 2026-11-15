@@ -106,3 +106,4 @@ async def delete_health_record(
         )
     await health_record_service.delete_health_record(db, record)
     return None
+

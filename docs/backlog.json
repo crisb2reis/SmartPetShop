@@ -52,6 +52,12 @@
     "title": "Testes de Segurança da Aplicação e Hardening (OWASP Top 10, Rate Limiting, SAST)",
     "description": "Implementar suite de segurança completa para operação em produção na internet: OWASP Top 10, Rate Limiting no Chatbot e API, sanitização contra Prompt Injection, análise SAST com Bandit/npm audit e execução dos containers sem privilégios de root.",
     "labels": ["security", "devops", "compliance"]
+  },
+  {
+    "epic": "Arquitetura & Segurança",
+    "title": "Arquitetura Multi-tenant (Multi-empresa) e Controle de Acesso por Perfil (RBAC)",
+    "description": "Implementar suporte a múltiplos pet shops com isolamento estrito de dados por tenant_id, autenticação individual por funcionário e controle de acesso RBAC (Admin, Recepção, Veterinário, Banhista/Tosador).",
+    "labels": ["architecture", "multi-tenancy", "security", "rbac"]
   }
 ]
 
