@@ -7,6 +7,7 @@ from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
+from app.core.security import sanitize_and_validate_prompt
 from app.models.chat import ChatSession, ChatMessage
 from app.schemas.chat import (
     ChatMessageIn,
@@ -29,6 +30,9 @@ async def send_chat_message(
     chat_in: ChatMessageIn,
     db: AsyncSession = Depends(get_db)
 ):
+    # 0. Sanitização e Proteção contra Prompt Injection / Buffer Overflow
+    clean_content = sanitize_and_validate_prompt(chat_in.content, max_length=1000)
+
     # 1. Recuperar ou criar a sessão de chat
     session = None
     if chat_in.session_id:
@@ -64,7 +68,7 @@ async def send_chat_message(
     user_msg = ChatMessage(
         session_id=session.id,
         role="user",
-        content=chat_in.content
+        content=clean_content
     )
     db.add(user_msg)
     await db.flush()
@@ -72,7 +76,7 @@ async def send_chat_message(
     # 4. Processar com o Agente de IA
     agent_output = await chatbot_agent.run(
         db=db,
-        user_message=chat_in.content,
+        user_message=clean_content,
         conversation_history=conversation_history
     )
 

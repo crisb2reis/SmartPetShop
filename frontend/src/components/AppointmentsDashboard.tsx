@@ -275,3 +275,4 @@ export const AppointmentsDashboard: React.FC = () => {
     </div>
   );
 };
+

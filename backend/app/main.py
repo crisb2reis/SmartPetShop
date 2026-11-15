@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
+from app.core.security import SecurityHeadersMiddleware, RateLimitMiddleware
 from app.api.v1.router import api_router
 
 app = FastAPI(
@@ -11,18 +12,29 @@ app = FastAPI(
     redoc_url=f"{settings.API_V1_STR}/redoc",
 )
 
-# CORS configuration
+# 1. Middleware de Cabeçalhos de Segurança (OWASP Top 10)
+app.add_middleware(SecurityHeadersMiddleware)
+
+# 2. Middleware de Rate Limiting (Anti-DDoS / Anti-BruteForce)
+app.add_middleware(
+    RateLimitMiddleware,
+    general_limit=120,   # Máximo 120 requisições por minuto para endpoints gerais
+    ai_limit=20,         # Máximo 20 requisições por minuto para chat / IA
+    window_seconds=60
+)
+
+# 3. CORS Restritivo
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.BACKEND_CORS_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type", "Accept", "X-Requested-With"],
+    max_age=86400,
 )
 
-# Registra endpoints da API v1 (/api/v1/tutors, /api/v1/pets, etc.)
+# 4. Registra endpoints da API v1
 app.include_router(api_router, prefix=settings.API_V1_STR)
-
 
 
 @app.get("/")
@@ -42,4 +54,3 @@ def health_check():
         "database_host": settings.POSTGRES_HOST,
         "database_name": settings.POSTGRES_DB
     }
-

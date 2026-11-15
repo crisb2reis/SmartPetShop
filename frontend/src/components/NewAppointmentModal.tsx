@@ -205,3 +205,4 @@ export const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({
     </div>
   );
 };
+

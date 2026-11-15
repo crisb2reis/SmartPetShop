@@ -19,8 +19,8 @@ export const RoadmapGrid: React.FC = () => {
     { title: 'Notificações Preditivas e Retorno', status: 'Concluído', icon: Bell, color: 'text-emerald-600', isCompleted: true },
     { title: 'Setup Frontend React & Tailwind', status: 'Concluído', icon: LayoutDashboard, color: 'text-emerald-600', isCompleted: true },
     { title: 'Dashboard de Recepção & Agendamentos', status: 'Concluído', icon: Calendar, color: 'text-emerald-600', isCompleted: true },
-    { title: 'Segurança & Hardening (OWASP/SAST)', status: 'Próximo', icon: ShieldCheck, color: 'text-amber-500' },
-    { title: 'Multi-tenancy & Perfis RBAC', status: 'Backlog', icon: Building2, color: 'text-slate-400' },
+    { title: 'Segurança & Hardening (OWASP/SAST)', status: 'Concluído', icon: ShieldCheck, color: 'text-emerald-600', isCompleted: true },
+    { title: 'Multi-tenancy & Perfis RBAC', status: 'Próximo', icon: Building2, color: 'text-amber-500' },
   ];
 
   return (
