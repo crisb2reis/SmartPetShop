@@ -38,6 +38,8 @@ export interface Pet {
   species: string;
   breed?: string;
   weight?: number;
+  birth_date?: string;
+  medical_notes?: string;
 }
 
 export interface ServiceItem {
@@ -153,8 +155,32 @@ export const updateTutor = async (
   return response.data;
 };
 
-export const createPet = async (data: { tutor_id: string; name: string; species: string; breed?: string }): Promise<Pet> => {
+export const createPet = async (data: {
+  tutor_id: string;
+  name: string;
+  species: string;
+  breed?: string;
+  weight?: number;
+  birth_date?: string;
+  medical_notes?: string;
+}): Promise<Pet> => {
   const response = await api.post('/pets/', data);
+  return response.data;
+};
+
+export const updatePet = async (
+  petId: string,
+  data: {
+    tutor_id?: string;
+    name?: string;
+    species?: string;
+    breed?: string;
+    weight?: number;
+    birth_date?: string;
+    medical_notes?: string;
+  }
+): Promise<Pet> => {
+  const response = await api.put(`/pets/${petId}`, data);
   return response.data;
 };
 

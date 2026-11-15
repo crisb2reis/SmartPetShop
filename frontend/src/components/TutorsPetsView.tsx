@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { User, Dog, Plus, Search, Phone, Mail, CheckCircle, AlertCircle, Pencil } from 'lucide-react';
 import { fetchTutors, fetchPets, createTutor, createPet, Tutor, Pet } from '../services/api';
 import { EditTutorModal } from './EditTutorModal';
+import { EditPetModal } from './EditPetModal';
 
 export const TutorsPetsView: React.FC = () => {
   const [tutors, setTutors] = useState<Tutor[]>([]);
@@ -12,6 +13,10 @@ export const TutorsPetsView: React.FC = () => {
   // Edit tutor modal state
   const [editingTutor, setEditingTutor] = useState<Tutor | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  // Edit pet modal state
+  const [editingPet, setEditingPet] = useState<Pet | null>(null);
+  const [isEditPetModalOpen, setIsEditPetModalOpen] = useState(false);
 
   // Form states
   const [showTutorForm, setShowTutorForm] = useState(false);
@@ -93,6 +98,16 @@ export const TutorsPetsView: React.FC = () => {
   const handleEditSuccess = (updatedTutor: Tutor) => {
     setTutors((prev) => prev.map((t) => (t.id === updatedTutor.id ? updatedTutor : t)));
     setMessage(`Tutor ${updatedTutor.name} atualizado com sucesso!`);
+  };
+
+  const handleOpenEditPet = (pet: Pet) => {
+    setEditingPet(pet);
+    setIsEditPetModalOpen(true);
+  };
+
+  const handleEditPetSuccess = (updatedPet: Pet) => {
+    setPets((prev) => prev.map((p) => (p.id === updatedPet.id ? updatedPet : p)));
+    setMessage(`Dados do pet ${updatedPet.name} atualizados com sucesso!`);
   };
 
   const filteredTutors = tutors.filter(
@@ -278,20 +293,43 @@ export const TutorsPetsView: React.FC = () => {
               </div>
 
               {/* Pets do Tutor */}
-              <div className="pt-2 border-t border-slate-100 space-y-1.5">
-                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Pets ({tutorPets.length}):</p>
+              <div className="pt-2 border-t border-slate-100 space-y-2">
+                <div className="flex items-center justify-between">
+                  <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                    Pets ({tutorPets.length}):
+                  </p>
+                  <button
+                    onClick={() => {
+                      setPetTutorId(t.id);
+                      setShowPetForm(true);
+                    }}
+                    title="Adicionar pet para este tutor"
+                    className="text-[11px] font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-0.5 hover:underline"
+                  >
+                    <Plus className="w-3 h-3" />
+                    <span>Novo Pet</span>
+                  </button>
+                </div>
+
                 {tutorPets.length === 0 ? (
-                  <p className="text-xs text-slate-400 italic">Nenhum pet cadastrado.</p>
+                  <p className="text-xs text-slate-400 italic">Nenhum pet vinculado a este tutor.</p>
                 ) : (
                   <div className="flex flex-wrap gap-1.5">
                     {tutorPets.map((p) => (
-                      <span
+                      <button
                         key={p.id}
-                        className="text-xs font-semibold bg-slate-100 text-slate-700 px-2.5 py-1 rounded-lg flex items-center gap-1"
+                        type="button"
+                        onClick={() => handleOpenEditPet(p)}
+                        title="Clique para editar os dados deste pet"
+                        className="group text-xs font-semibold bg-slate-50 hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 border border-slate-200 hover:border-emerald-300 px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 transition-all text-left shadow-2xs"
                       >
-                        <Dog className="w-3 h-3 text-emerald-600" />
-                        {p.name} <span className="text-[10px] text-slate-400 font-normal">({p.breed || p.species})</span>
-                      </span>
+                        <Dog className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        <span className="font-bold">{p.name}</span>
+                        <span className="text-[10px] text-slate-400 font-normal">
+                          ({p.breed || p.species})
+                        </span>
+                        <Pencil className="w-2.5 h-2.5 text-slate-400 opacity-60 group-hover:opacity-100 group-hover:text-emerald-600 transition-opacity ml-0.5" />
+                      </button>
                     ))}
                   </div>
                 )}
@@ -310,6 +348,18 @@ export const TutorsPetsView: React.FC = () => {
           setEditingTutor(null);
         }}
         onSuccess={handleEditSuccess}
+      />
+
+      {/* Modal de Edição de Pet */}
+      <EditPetModal
+        isOpen={isEditPetModalOpen}
+        pet={editingPet}
+        tutors={tutors}
+        onClose={() => {
+          setIsEditPetModalOpen(false);
+          setEditingPet(null);
+        }}
+        onSuccess={handleEditPetSuccess}
       />
     </div>
   );
