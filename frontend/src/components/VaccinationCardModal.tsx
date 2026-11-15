@@ -19,6 +19,7 @@ import {
   VaccineRecordItem,
   Pet
 } from '../services/api';
+import { AddVaccineModal } from './AddVaccineModal';
 
 interface VaccinationCardModalProps {
   isOpen: boolean;
@@ -36,6 +37,7 @@ export const VaccinationCardModal: React.FC<VaccinationCardModalProps> = ({
   const [cardData, setCardData] = useState<VaccineCardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeSubTab, setActiveSubTab] = useState<'applied' | 'upcoming' | 'all'>('applied');
+  const [isAddVaccineOpen, setIsAddVaccineOpen] = useState(false);
 
   const loadCard = async () => {
     if (!pet) return;
@@ -182,15 +184,19 @@ export const VaccinationCardModal: React.FC<VaccinationCardModalProps> = ({
             </div>
           </div>
 
-          {onOpenAddVaccine && (
-            <button
-              onClick={() => onOpenAddVaccine(pet)}
-              className="flex items-center space-x-1.5 text-xs font-bold px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-all"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Registrar Aplicação</span>
-            </button>
-          )}
+          <button
+            onClick={() => {
+              if (onOpenAddVaccine) {
+                onOpenAddVaccine(pet);
+              } else {
+                setIsAddVaccineOpen(true);
+              }
+            }}
+            className="flex items-center space-x-1.5 text-xs font-bold px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-all"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Registrar Aplicação</span>
+          </button>
         </div>
 
         {/* Subtabs de Navegação */}
@@ -355,6 +361,15 @@ export const VaccinationCardModal: React.FC<VaccinationCardModalProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Modal de Lançamento de Vacina (Issue #15) */}
+      <AddVaccineModal
+        isOpen={isAddVaccineOpen}
+        pet={pet}
+        onClose={() => setIsAddVaccineOpen(false)}
+        onSuccess={loadCard}
+      />
     </div>
   );
 };
+
