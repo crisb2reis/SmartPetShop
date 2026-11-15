@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Database, Dog, Bot, Bell, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { Calendar, Database, Dog, Bot, Bell, CheckCircle2, ShieldCheck, LayoutDashboard } from 'lucide-react';
 
 interface ModuleItem {
   title: string;
@@ -16,8 +16,9 @@ export const RoadmapGrid: React.FC = () => {
     { title: 'CRUD de Pets e Tutores', status: 'Concluído', icon: Dog, color: 'text-emerald-600', isCompleted: true },
     { title: 'Agenda de Banho, Tosa e Consultas', status: 'Concluído', icon: Calendar, color: 'text-emerald-600', isCompleted: true },
     { title: 'Atendimento Conversacional (Gemini)', status: 'Concluído', icon: Bot, color: 'text-emerald-600', isCompleted: true },
-    { title: 'Notificações Preditivas e Retorno', status: 'Próximo', icon: Bell, color: 'text-amber-500' },
-    { title: 'Dashboard de Agendamentos e Alertas', status: 'Backlog', icon: Calendar, color: 'text-slate-400' },
+    { title: 'Notificações Preditivas e Retorno', status: 'Concluído', icon: Bell, color: 'text-emerald-600', isCompleted: true },
+    { title: 'Setup do Frontend React & Tailwind', status: 'Concluído', icon: LayoutDashboard, color: 'text-emerald-600', isCompleted: true },
+    { title: 'Dashboard de Agendamentos e Alertas', status: 'Próximo', icon: Calendar, color: 'text-amber-500' },
     { title: 'Segurança & Hardening (OWASP/SAST)', status: 'Backlog', icon: ShieldCheck, color: 'text-slate-400' },
   ];
 
@@ -27,7 +28,7 @@ export const RoadmapGrid: React.FC = () => {
         <Calendar className="w-5 h-5 text-emerald-600" />
         Módulos do Sistema
       </h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {modules.map((m, i) => {
           const Icon = m.icon;
           return (

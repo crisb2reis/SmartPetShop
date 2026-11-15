@@ -41,3 +41,4 @@ export const Header: React.FC<HeaderProps> = ({ isOnline, isLoading }) => {
     </header>
   );
 };
+

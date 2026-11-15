@@ -148,3 +148,4 @@ async def list_chat_sessions(
     result = await db.execute(query)
     sessions = result.scalars().all()
     return list(sessions)
+

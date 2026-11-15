@@ -160,3 +160,4 @@ async def schedule_appointment_tool(
         "scheduled_at": appointment.scheduled_at.isoformat(),
         "message": f"Agendamento de {service.name} para {matched_pet.name} confirmado com sucesso para {appointment.scheduled_at.strftime('%d/%m/%Y às %H:%M')}!"
     }
+

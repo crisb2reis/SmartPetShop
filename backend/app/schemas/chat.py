@@ -38,3 +38,4 @@ class ChatResponse(BaseModel):
     reply: str
     tools_called: List[Dict[str, Any]] = []
     created_at: datetime
+

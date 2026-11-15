@@ -13,6 +13,17 @@ from app.schemas.chat import (
     ChatSessionOut,
     ChatResponse
 )
+from app.schemas.health_record import (
+    HealthRecordCreate,
+    HealthRecordUpdate,
+    HealthRecordResponse
+)
+from app.schemas.alert import (
+    AlertCreate,
+    AlertUpdateStatus,
+    AlertResponse,
+    AlertScanResult
+)
 
 __all__ = [
     "TutorCreate",
@@ -33,4 +44,11 @@ __all__ = [
     "ChatMessageOut",
     "ChatSessionOut",
     "ChatResponse",
+    "HealthRecordCreate",
+    "HealthRecordUpdate",
+    "HealthRecordResponse",
+    "AlertCreate",
+    "AlertUpdateStatus",
+    "AlertResponse",
+    "AlertScanResult",
 ]

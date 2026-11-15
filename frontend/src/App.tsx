@@ -3,6 +3,7 @@ import { Activity, Database, Bot, Bell } from 'lucide-react';
 import { Header } from './components/Header';
 import { StatusCard } from './components/StatusCard';
 import { ChatWidget } from './components/ChatWidget';
+import { AlertsWidget } from './components/AlertsWidget';
 import { RoadmapGrid } from './components/RoadmapGrid';
 import { fetchSystemStatus, SystemStatus } from './services/api';
 
@@ -72,7 +73,7 @@ export default function App() {
           />
           <StatusCard
             title="Agente Alertas"
-            value="Preditivo"
+            value="Preditivo Ativo"
             subtitle="Vacinas e Retornos"
             icon={Bell}
             bgColor="bg-amber-50"
@@ -80,33 +81,13 @@ export default function App() {
           />
         </div>
 
-        {/* Seção Principal: Chatbot Interativo & Roadmap */}
+        {/* Seção Principal: Chatbot IA & Alertas Preditivos lado a lado */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           <div className="lg:col-span-7">
             <ChatWidget />
           </div>
-          <div className="lg:col-span-5 space-y-6">
-            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
-              <h3 className="font-bold text-slate-800 text-base mb-2">🐾 Experimente o Rex</h3>
-              <p className="text-sm text-slate-600 leading-relaxed mb-4">
-                O assistente acima consulta em tempo real o banco de dados do Pet Shop.
-              </p>
-              <div className="space-y-2 text-xs text-slate-600">
-                <div className="p-2.5 rounded-lg bg-emerald-50 text-emerald-800 font-medium border border-emerald-100">
-                  💡 "Quais os serviços e preços de banho e tosa?"
-                </div>
-                <div className="p-2.5 rounded-lg bg-emerald-50 text-emerald-800 font-medium border border-emerald-100">
-                  💡 "Tem horários vagos para tosa no dia 20/11/2026?"
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
-              <h3 className="font-bold text-slate-800 text-base mb-2">🛡️ Arquitetura Segura</h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Todas as chamadas do agente passam por validação de regras de negócio, bloqueando sobreposição de agendas e prevenindo injeções.
-              </p>
-            </div>
+          <div className="lg:col-span-5 h-[520px]">
+            <AlertsWidget />
           </div>
         </div>
 
