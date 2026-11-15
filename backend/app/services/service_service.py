@@ -63,3 +63,4 @@ async def update_service(db: AsyncSession, service: Service, service_in: Service
 async def delete_service(db: AsyncSession, service: Service) -> None:
     await db.delete(service)
     await db.flush()
+

@@ -45,3 +45,4 @@ class AvailableSlotsResponse(BaseModel):
     service_name: str
     duration_minutes: int
     slots: List[str]
+

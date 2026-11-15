@@ -7,6 +7,12 @@ from app.schemas.appointment import (
     AppointmentResponse,
     AvailableSlotsResponse
 )
+from app.schemas.chat import (
+    ChatMessageIn,
+    ChatMessageOut,
+    ChatSessionOut,
+    ChatResponse
+)
 
 __all__ = [
     "TutorCreate",
@@ -23,4 +29,8 @@ __all__ = [
     "AppointmentUpdate",
     "AppointmentResponse",
     "AvailableSlotsResponse",
+    "ChatMessageIn",
+    "ChatMessageOut",
+    "ChatSessionOut",
+    "ChatResponse",
 ]

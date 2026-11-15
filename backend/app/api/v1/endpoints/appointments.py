@@ -190,3 +190,4 @@ async def cancel_appointment(
             detail="Agendamento não encontrado."
         )
     return await appointment_service.cancel_appointment(db, appointment)
+

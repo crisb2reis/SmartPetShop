@@ -118,3 +118,4 @@ async def delete_service(
         )
     await service_service.delete_service(db, service)
     return None
+

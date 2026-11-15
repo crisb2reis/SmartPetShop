@@ -186,3 +186,4 @@ async def cancel_appointment(db: AsyncSession, appointment: Appointment) -> Appo
     db.add(appointment)
     await db.flush()
     return await get_appointment(db, appointment.id, load_relations=True)
+
