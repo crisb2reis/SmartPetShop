@@ -37,3 +37,4 @@ def health_check():
         "database_host": settings.POSTGRES_HOST,
         "database_name": settings.POSTGRES_DB
     }
+

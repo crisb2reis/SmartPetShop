@@ -46,6 +46,12 @@
     "title": "Dashboard de Agendamentos e Alertas do Dia",
     "description": "Construir a tela principal com visão rápida dos pets agendados para o dia, status dos atendimentos e alertas preditivos pendentes.",
     "labels": ["frontend", "react", "dashboard"]
+  },
+  {
+    "epic": "Segurança & Compliance",
+    "title": "Testes de Segurança da Aplicação e Hardening (OWASP Top 10, Rate Limiting, SAST)",
+    "description": "Implementar suite de segurança completa para operação em produção na internet: OWASP Top 10, Rate Limiting no Chatbot e API, sanitização contra Prompt Injection, análise SAST com Bandit/npm audit e execução dos containers sem privilégios de root.",
+    "labels": ["security", "devops", "compliance"]
   }
 ]
 
