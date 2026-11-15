@@ -7,8 +7,12 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       POSTGRES_DB: ${POSTGRES_DB:-smartpetshop}
-    ports:
-      - "${POSTGRES_HOST_PORT:-5433}:5432"
+    expose:
+      - "5432"
+    # O banco fica isolado na rede interna do Docker (sem conflitos de portas com o host).
+    # Descomente abaixo caso queira acessar via DBeaver/pgAdmin externo:
+    # ports:
+    #   - "5435:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
