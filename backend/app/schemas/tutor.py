@@ -37,3 +37,4 @@ class TutorWithPetsResponse(TutorResponse):
     pets: List[PetResponse] = []
 
     model_config = ConfigDict(from_attributes=True)
+

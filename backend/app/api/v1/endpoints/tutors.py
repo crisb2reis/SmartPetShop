@@ -140,3 +140,4 @@ async def list_tutor_pets(
             detail="Tutor não encontrado."
         )
     return await pet_service.list_pets(db, tutor_id=tutor_id)
+

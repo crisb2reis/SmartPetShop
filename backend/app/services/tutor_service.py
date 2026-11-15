@@ -75,3 +75,4 @@ async def update_tutor(db: AsyncSession, tutor: Tutor, tutor_in: TutorUpdate) ->
 async def delete_tutor(db: AsyncSession, tutor: Tutor) -> None:
     await db.delete(tutor)
     await db.flush()
+

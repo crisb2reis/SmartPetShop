@@ -120,3 +120,4 @@ async def delete_pet(
         )
     await pet_service.delete_pet(db, pet)
     return None
+

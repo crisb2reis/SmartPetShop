@@ -70,3 +70,4 @@ async def update_pet(db: AsyncSession, pet: Pet, pet_in: PetUpdate) -> Pet:
 async def delete_pet(db: AsyncSession, pet: Pet) -> None:
     await db.delete(pet)
     await db.flush()
+
