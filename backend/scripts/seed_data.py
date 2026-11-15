@@ -5,9 +5,14 @@ Populates sample Organization, Admin, Services, Tutors and Pets for testing.
 """
 
 import asyncio
+import os
+import sys
 import uuid
 from decimal import Decimal
 from datetime import date, datetime, timedelta
+
+# Garante que o diretório raiz da app esteja no PYTHONPATH
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from app.core.database import AsyncSessionLocal
 from app.core.auth import hash_password
@@ -147,3 +152,4 @@ async def seed():
 
 if __name__ == "__main__":
     asyncio.run(seed())
+

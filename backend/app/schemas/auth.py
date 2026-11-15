@@ -65,3 +65,4 @@ class TokenResponse(BaseModel):
     role: str
     name: str
     organization_name: str
+

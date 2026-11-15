@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { User, Dog, Plus, Search, Phone, Mail, CheckCircle, AlertCircle } from 'lucide-react';
+import { User, Dog, Plus, Search, Phone, Mail, CheckCircle, AlertCircle, Pencil } from 'lucide-react';
 import { fetchTutors, fetchPets, createTutor, createPet, Tutor, Pet } from '../services/api';
+import { EditTutorModal } from './EditTutorModal';
 
 export const TutorsPetsView: React.FC = () => {
   const [tutors, setTutors] = useState<Tutor[]>([]);
   const [pets, setPets] = useState<Pet[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+
+  // Edit tutor modal state
+  const [editingTutor, setEditingTutor] = useState<Tutor | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   // Form states
   const [showTutorForm, setShowTutorForm] = useState(false);
@@ -78,6 +83,16 @@ export const TutorsPetsView: React.FC = () => {
     } catch (err: any) {
       setMessage(`Erro: ${err.response?.data?.detail || err.message}`);
     }
+  };
+
+  const handleOpenEditTutor = (tutor: Tutor) => {
+    setEditingTutor(tutor);
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditSuccess = (updatedTutor: Tutor) => {
+    setTutors((prev) => prev.map((t) => (t.id === updatedTutor.id ? updatedTutor : t)));
+    setMessage(`Tutor ${updatedTutor.name} atualizado com sucesso!`);
   };
 
   const filteredTutors = tutors.filter(
@@ -239,17 +254,27 @@ export const TutorsPetsView: React.FC = () => {
           const tutorPets = pets.filter((p) => p.tutor_id === t.id);
           return (
             <div key={t.id} className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm space-y-3">
-              <div className="flex items-center space-x-3">
-                <div className="w-9 h-9 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm">
-                  {t.name.substring(0, 2).toUpperCase()}
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center space-x-3 min-w-0 flex-1">
+                  <div className="w-9 h-9 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm shrink-0">
+                    {t.name.substring(0, 2).toUpperCase()}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h4 className="text-sm font-bold text-slate-800 truncate">{t.name}</h4>
+                    <p className="text-xs text-slate-500 flex items-center gap-1">
+                      <Phone className="w-3 h-3 text-emerald-600 shrink-0" />
+                      <span>{t.phone}</span>
+                    </p>
+                  </div>
                 </div>
-                <div className="min-w-0 flex-1">
-                  <h4 className="text-sm font-bold text-slate-800 truncate">{t.name}</h4>
-                  <p className="text-xs text-slate-500 flex items-center gap-1">
-                    <Phone className="w-3 h-3 text-emerald-600" />
-                    {t.phone}
-                  </p>
-                </div>
+
+                <button
+                  onClick={() => handleOpenEditTutor(t)}
+                  title="Editar dados do tutor"
+                  className="p-1.5 text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors border border-transparent hover:border-emerald-200 shrink-0"
+                >
+                  <Pencil className="w-3.5 h-3.5" />
+                </button>
               </div>
 
               {/* Pets do Tutor */}
@@ -275,6 +300,17 @@ export const TutorsPetsView: React.FC = () => {
           );
         })}
       </div>
+
+      {/* Modal de Edição de Tutor */}
+      <EditTutorModal
+        isOpen={isEditModalOpen}
+        tutor={editingTutor}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setEditingTutor(null);
+        }}
+        onSuccess={handleEditSuccess}
+      />
     </div>
   );
 };

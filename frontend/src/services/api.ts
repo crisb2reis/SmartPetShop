@@ -1,7 +1,16 @@
 import axios from 'axios';
 
+const getHost = () => {
+  if (typeof window !== 'undefined' && window.location.hostname) {
+    return window.location.hostname;
+  }
+  return 'localhost';
+};
+
+export const API_HOST_URL = `http://${getHost()}:8001`;
+
 export const api = axios.create({
-  baseURL: 'http://localhost:8001/api/v1',
+  baseURL: `${API_HOST_URL}/api/v1`,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -72,7 +81,7 @@ export interface AlertItem {
 
 // System
 export const fetchSystemStatus = async (): Promise<SystemStatus> => {
-  const response = await axios.get('http://localhost:8001/');
+  const response = await axios.get(`${API_HOST_URL}/`);
   return response.data;
 };
 
@@ -91,7 +100,7 @@ export const fetchAppointments = async (targetDate?: string, status?: string): P
   const params: Record<string, string> = {};
   if (targetDate) params.target_date = targetDate;
   if (status && status !== 'all') params.status = status;
-  const response = await api.get('/appointments', { params });
+  const response = await api.get('/appointments/', { params });
   return response.data;
 };
 
@@ -101,7 +110,7 @@ export const createAppointment = async (data: {
   scheduled_at: string;
   notes?: string;
 }): Promise<AppointmentItem> => {
-  const response = await api.post('/appointments', data);
+  const response = await api.post('/appointments/', data);
   return response.data;
 };
 
@@ -117,33 +126,41 @@ export const updateAppointmentStatus = async (
 
 // Services & Pets & Tutors
 export const fetchServices = async (): Promise<ServiceItem[]> => {
-  const response = await api.get('/services', { params: { active_only: true } });
+  const response = await api.get('/services/', { params: { active_only: true } });
   return response.data;
 };
 
 export const fetchPets = async (): Promise<Pet[]> => {
-  const response = await api.get('/pets');
+  const response = await api.get('/pets/');
   return response.data;
 };
 
 export const fetchTutors = async (): Promise<Tutor[]> => {
-  const response = await api.get('/tutors');
+  const response = await api.get('/tutors/');
   return response.data;
 };
 
 export const createTutor = async (data: { name: string; phone: string; email?: string }): Promise<Tutor> => {
-  const response = await api.post('/tutors', data);
+  const response = await api.post('/tutors/', data);
+  return response.data;
+};
+
+export const updateTutor = async (
+  tutorId: string,
+  data: { name?: string; phone?: string; email?: string; address?: string }
+): Promise<Tutor> => {
+  const response = await api.put(`/tutors/${tutorId}`, data);
   return response.data;
 };
 
 export const createPet = async (data: { tutor_id: string; name: string; species: string; breed?: string }): Promise<Pet> => {
-  const response = await api.post('/pets', data);
+  const response = await api.post('/pets/', data);
   return response.data;
 };
 
 // Alerts
 export const fetchAlerts = async (status: string = 'pending'): Promise<AlertItem[]> => {
-  const response = await api.get('/alerts', {
+  const response = await api.get('/alerts/', {
     params: { status }
   });
   return response.data;

@@ -1,26 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Activity,
-  Database,
-  Bot,
-  Bell,
   Calendar,
   Users,
   MessageSquare
 } from 'lucide-react';
 import { Header } from './components/Header';
-import { StatusCard } from './components/StatusCard';
 import { AppointmentsDashboard } from './components/AppointmentsDashboard';
 import { ChatWidget } from './components/ChatWidget';
 import { AlertsWidget } from './components/AlertsWidget';
 import { TutorsPetsView } from './components/TutorsPetsView';
-import { RoadmapGrid } from './components/RoadmapGrid';
-import { fetchSystemStatus, SystemStatus } from './services/api';
+import { fetchSystemStatus } from './services/api';
 
 type TabType = 'agenda' | 'ia' | 'cadastros';
 
 export default function App() {
-  const [systemStatus, setSystemStatus] = useState<SystemStatus | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>('agenda');
@@ -29,9 +22,10 @@ export default function App() {
     const loadStatus = async () => {
       try {
         const data = await fetchSystemStatus();
-        setSystemStatus(data);
+        console.log('[SmartPetShop] Backend conectado:', data);
         setError(null);
       } catch (err: any) {
+        console.warn('[SmartPetShop] Falha na conexão com a API:', err);
         setError(err.message || 'Falha na conexão com a API');
       } finally {
         setLoading(false);
@@ -39,6 +33,8 @@ export default function App() {
     };
 
     loadStatus();
+    const interval = setInterval(loadStatus, 4000);
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -48,42 +44,6 @@ export default function App() {
 
       {/* Main Container */}
       <main className="max-w-7xl mx-auto px-6 py-6 flex-1 w-full space-y-6">
-        {/* Metric Cards Top */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatusCard
-            title="FastAPI Backend"
-            value={systemStatus?.version ? `v${systemStatus.version}` : 'Porta 8001'}
-            subtitle="Swagger: /api/v1/docs"
-            icon={Activity}
-            bgColor="bg-blue-50"
-            iconColor="text-blue-600"
-          />
-          <StatusCard
-            title="PostgreSQL"
-            value="Porta 5432"
-            subtitle="smartpetshop DB"
-            icon={Database}
-            bgColor="bg-indigo-50"
-            iconColor="text-indigo-600"
-          />
-          <StatusCard
-            title="Agente Chatbot"
-            value="Rex (Gemini)"
-            subtitle="Atendimento & Function Calling"
-            icon={Bot}
-            bgColor="bg-purple-50"
-            iconColor="text-purple-600"
-          />
-          <StatusCard
-            title="Agente Alertas"
-            value="Preditivo Ativo"
-            subtitle="Vacinas e Retorno de Banho"
-            icon={Bell}
-            bgColor="bg-amber-50"
-            iconColor="text-amber-600"
-          />
-        </div>
-
         {/* Tab Navigation Menu */}
         <div className="flex items-center space-x-2 border-b border-slate-200 pb-2">
           <button
@@ -138,9 +98,6 @@ export default function App() {
         )}
 
         {activeTab === 'cadastros' && <TutorsPetsView />}
-
-        {/* Roadmap de Módulos */}
-        <RoadmapGrid />
       </main>
 
       {/* Footer */}

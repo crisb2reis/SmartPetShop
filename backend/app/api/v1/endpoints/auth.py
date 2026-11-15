@@ -211,3 +211,4 @@ async def list_employees(
     query = select(User).where(User.tenant_id == current_user.tenant_id).order_by(User.name.asc())
     res = await db.execute(query)
     return list(res.scalars().all())
+
