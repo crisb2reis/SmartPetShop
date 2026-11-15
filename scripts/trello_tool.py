@@ -211,3 +211,4 @@ if __name__ == "__main__":
         move_card(sys.argv[2], sys.argv[3])
     else:
         print(f"Comando desconhecido: {cmd}")
+
