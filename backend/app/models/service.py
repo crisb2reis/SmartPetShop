@@ -23,3 +23,4 @@ class Service(TimestampedModel):
 
     def __repr__(self) -> str:
         return f"<Service id={self.id} name='{self.name}' price={self.price}>"
+

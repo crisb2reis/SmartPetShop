@@ -187,3 +187,4 @@ def downgrade() -> None:
     op.drop_table('services')
     op.drop_table('pets')
     op.drop_table('tutors')
+

@@ -51,3 +51,4 @@ class Alert(TimestampedModel):
 
     def __repr__(self) -> str:
         return f"<Alert id={self.id} type='{self.alert_type}' status='{self.status}'>"
+

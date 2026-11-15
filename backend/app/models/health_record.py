@@ -36,3 +36,4 @@ class HealthRecord(TimestampedModel):
 
     def __repr__(self) -> str:
         return f"<HealthRecord id={self.id} type='{self.record_type}' title='{self.title}'>"
+

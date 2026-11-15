@@ -45,3 +45,4 @@ class Appointment(TimestampedModel):
 
     def __repr__(self) -> str:
         return f"<Appointment id={self.id} scheduled_at={self.scheduled_at} status='{self.status}'>"
+

@@ -41,3 +41,4 @@ class ChatMessage(TimestampedModel):
 
     # Relacionamentos
     session: Mapped["ChatSession"] = relationship("ChatSession", back_populates="messages")
+

@@ -26,3 +26,4 @@ class TimestampedModel(Base):
         onupdate=func.now(),
         nullable=False
     )
+

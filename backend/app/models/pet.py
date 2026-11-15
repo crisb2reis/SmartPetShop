@@ -40,3 +40,4 @@ class Pet(TimestampedModel):
 
     def __repr__(self) -> str:
         return f"<Pet id={self.id} name='{self.name}' species='{self.species}'>"
+

@@ -25,3 +25,4 @@ class Tutor(TimestampedModel):
 
     def __repr__(self) -> str:
         return f"<Tutor id={self.id} name='{self.name}' phone='{self.phone}'>"
+
