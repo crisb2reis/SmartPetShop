@@ -20,14 +20,14 @@ export const RoadmapGrid: React.FC = () => {
     { title: 'Setup Frontend React & Tailwind', status: 'Concluído', icon: LayoutDashboard, color: 'text-emerald-600', isCompleted: true },
     { title: 'Dashboard de Recepção & Agendamentos', status: 'Concluído', icon: Calendar, color: 'text-emerald-600', isCompleted: true },
     { title: 'Segurança & Hardening (OWASP/SAST)', status: 'Concluído', icon: ShieldCheck, color: 'text-emerald-600', isCompleted: true },
-    { title: 'Multi-tenancy & Perfis RBAC', status: 'Próximo', icon: Building2, color: 'text-amber-500' },
+    { title: 'Multi-tenancy & Perfis RBAC', status: 'Concluído', icon: Building2, color: 'text-emerald-600', isCompleted: true },
   ];
 
   return (
     <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
       <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
         <Calendar className="w-5 h-5 text-emerald-600" />
-        Módulos do Sistema & Roadmap
+        Módulos do Sistema & Roadmap Completo
       </h3>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
         {modules.map((m, i) => {
@@ -45,8 +45,6 @@ export const RoadmapGrid: React.FC = () => {
                 className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider flex-shrink-0 ${
                   m.isCompleted
                     ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
-                    : m.status === 'Próximo'
-                    ? 'bg-amber-100 text-amber-700 border border-amber-200'
                     : 'bg-white text-slate-500 border border-slate-200'
                 }`}
               >

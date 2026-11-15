@@ -1,6 +1,8 @@
+import uuid
 from decimal import Decimal
 from typing import List, TYPE_CHECKING
-from sqlalchemy import String, Numeric, Integer, Boolean, Text
+from sqlalchemy import String, Numeric, Integer, Boolean, Text, ForeignKey
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.models.base import TimestampedModel
 
@@ -11,7 +13,13 @@ if TYPE_CHECKING:
 class Service(TimestampedModel):
     __tablename__ = "services"
 
-    name: Mapped[str] = mapped_column(String(100), nullable=False, unique=True, index=True)
+    tenant_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("organizations.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
+    name: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
     category: Mapped[str] = mapped_column(String(50), nullable=False, index=True) # Banho, Tosa, Veterinário, Vacinação
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     price: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)

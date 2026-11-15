@@ -14,6 +14,12 @@ if TYPE_CHECKING:
 class Appointment(TimestampedModel):
     __tablename__ = "appointments"
 
+    tenant_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("organizations.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
     pet_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey("pets.id", ondelete="CASCADE"),

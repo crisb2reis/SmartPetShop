@@ -1,5 +1,7 @@
 from app.core.database import Base
 from app.models.base import TimestampedModel
+from app.models.organization import Organization
+from app.models.user import User
 from app.models.tutor import Tutor
 from app.models.pet import Pet
 from app.models.service import Service
@@ -11,6 +13,8 @@ from app.models.chat import ChatSession, ChatMessage
 __all__ = [
     "Base",
     "TimestampedModel",
+    "Organization",
+    "User",
     "Tutor",
     "Pet",
     "Service",
@@ -20,4 +24,3 @@ __all__ = [
     "ChatSession",
     "ChatMessage",
 ]
-

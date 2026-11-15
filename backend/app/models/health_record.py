@@ -13,6 +13,12 @@ if TYPE_CHECKING:
 class HealthRecord(TimestampedModel):
     __tablename__ = "health_records"
 
+    tenant_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("organizations.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
     pet_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey("pets.id", ondelete="CASCADE"),

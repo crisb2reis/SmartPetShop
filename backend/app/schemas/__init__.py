@@ -24,6 +24,15 @@ from app.schemas.alert import (
     AlertResponse,
     AlertScanResult
 )
+from app.schemas.auth import (
+    OrganizationCreate,
+    OrganizationResponse,
+    UserRegisterAdmin,
+    UserCreate,
+    UserResponse,
+    LoginRequest,
+    TokenResponse
+)
 
 __all__ = [
     "TutorCreate",
@@ -51,4 +60,11 @@ __all__ = [
     "AlertUpdateStatus",
     "AlertResponse",
     "AlertScanResult",
+    "OrganizationCreate",
+    "OrganizationResponse",
+    "UserRegisterAdmin",
+    "UserCreate",
+    "UserResponse",
+    "LoginRequest",
+    "TokenResponse",
 ]
