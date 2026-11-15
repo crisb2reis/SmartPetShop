@@ -52,7 +52,7 @@ export default function App() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatusCard
             title="FastAPI Backend"
-            value={systemStatus?.version ? `v${systemStatus.version}` : 'Porta 8000'}
+            value={systemStatus?.version ? `v${systemStatus.version}` : 'Porta 8001'}
             subtitle="Swagger: /api/v1/docs"
             icon={Activity}
             bgColor="bg-blue-50"
