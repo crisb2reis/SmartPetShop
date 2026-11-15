@@ -23,6 +23,7 @@ from app.models.tutor import Tutor
 from app.models.pet import Pet
 from app.models.health_record import HealthRecord
 from app.models.appointment import Appointment
+from scripts.seed_vaccines import seed_vaccines
 
 
 async def seed():
@@ -148,6 +149,9 @@ async def seed():
 
         await db.commit()
         print("🎉 Banco de dados povoado com sucesso!")
+
+    # Executa o seed oficial de vacinas e lotes
+    await seed_vaccines()
 
 
 if __name__ == "__main__":

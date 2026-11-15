@@ -210,3 +210,4 @@ class PetVaccinationRecord(TimestampedModel):
 
     def __repr__(self) -> str:
         return f"<PetVaccinationRecord id={self.id} pet_id={self.pet_id} status='{self.status}'>"
+

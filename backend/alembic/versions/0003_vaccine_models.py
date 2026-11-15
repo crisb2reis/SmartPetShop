@@ -104,3 +104,4 @@ def downgrade() -> None:
     op.drop_table('pet_vaccination_records')
     op.drop_table('vaccine_batches')
     op.drop_table('vaccine_catalogs')
+
