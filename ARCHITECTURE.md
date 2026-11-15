@@ -208,3 +208,4 @@ Ambiente unificado para desenvolvimento e produção:
 - **`db`**: PostgreSQL 16 com volume persistente para dados.
 - **`backend`**: Container Python 3.11 executando Uvicorn com hot-reload.
 - **`frontend`**: Container Node.js executando servidor de desenvolvimento Vite (ou Nginx multi-stage build para produção).
+
