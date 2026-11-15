@@ -54,3 +54,4 @@ def downgrade() -> None:
     op.drop_index('ix_whatsapp_messages_tenant_id', table_name='whatsapp_messages')
     op.drop_index('ix_whatsapp_messages_id', table_name='whatsapp_messages')
     op.drop_table('whatsapp_messages')
+

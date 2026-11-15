@@ -7,7 +7,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.services import whatsapp_service
-from app.schemas.whatsapp import WhatsAppMessageResponse, WebhookProcessingResult
+from app.agents.chatbot_agent import chatbot_agent
+from app.schemas.whatsapp import (
+    WhatsAppMessageResponse,
+    WebhookProcessingResult,
+    WhatsAppTestAgentRequest,
+    WhatsAppTestAgentResponse
+)
 
 router = APIRouter()
 logger = logging.getLogger("smartpetshop.whatsapp.api")
@@ -122,3 +128,28 @@ async def list_messages(
         limit=limit,
         skip=skip
     )
+
+
+@router.post(
+    "/process-message",
+    response_model=WhatsAppTestAgentResponse,
+    summary="Processar mensagem com o Agente de IA do WhatsApp",
+    description="Executa o motor conversacional Rex 🐾 para mensagens do WhatsApp com histórico de contexto e Tool Calling."
+)
+async def process_whatsapp_message(
+    payload: WhatsAppTestAgentRequest,
+    db: AsyncSession = Depends(get_db)
+):
+    result = await chatbot_agent.process_whatsapp_message(
+        db=db,
+        from_phone=payload.phone,
+        user_text=payload.message
+    )
+    return WhatsAppTestAgentResponse(
+        session_id=result["session_id"],
+        reply=result.get("reply"),
+        tools_called=result.get("tools_called", []),
+        handoff_requested=result.get("handoff_requested", False),
+        status=result.get("status", "active")
+    )
+

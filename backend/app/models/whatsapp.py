@@ -72,3 +72,4 @@ class WhatsAppMessage(TimestampedModel):
 
     def __repr__(self) -> str:
         return f"<WhatsAppMessage id={self.id} msg_id='{self.message_id}' phone='{self.phone}' dir='{self.direction}'>"
+
