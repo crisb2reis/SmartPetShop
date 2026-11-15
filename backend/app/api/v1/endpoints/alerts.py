@@ -58,6 +58,23 @@ async def run_predictive_scan(
     )
 
 
+@router.post(
+    "/run-vaccine-scan",
+    response_model=AlertScanResult,
+    summary="Varredura de Alertas de Vacinação (CFMV D-30, D-7, D-0 e Atrasadas)",
+    description="Executa o motor de verificação de vacinas da caderneta digital, disparando alertas de reforço para tutores."
+)
+async def run_vaccine_scan(
+    db: AsyncSession = Depends(get_db)
+):
+    result = await predictive_alert_agent.scan_vaccine_reminders(db)
+    return AlertScanResult(
+        total_pets_analyzed=result["total_records_analyzed"],
+        alerts_generated=result["alerts_generated"],
+        alerts=result["alerts"]
+    )
+
+
 @router.patch(
     "/{alert_id}/status",
     response_model=AlertResponse,

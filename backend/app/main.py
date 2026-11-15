@@ -1,8 +1,44 @@
+import asyncio
+import logging
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.security import SecurityHeadersMiddleware, RateLimitMiddleware
+from app.core.database import AsyncSessionLocal
+from app.agents.alert_agent import predictive_alert_agent
 from app.api.v1.router import api_router
+
+logger = logging.getLogger("smartpetshop.scheduler")
+
+
+async def periodic_vaccine_checker():
+    """Tarefa em background que verifica periodicamente o vencimento de vacinas (CFMV)."""
+    # Espera 10 segundos após a inicialização para executar a primeira checagem
+    await asyncio.sleep(10)
+    while True:
+        try:
+            async with AsyncSessionLocal() as db:
+                result = await predictive_alert_agent.scan_vaccine_reminders(db)
+                logger.info(f"[Scheduler] Varredura de vacinas concluída: {result.get('alerts_generated', 0)} novos alertas.")
+        except Exception as e:
+            logger.warning(f"[Scheduler] Falha na varredura de vacinas: {e}")
+        # Executa a cada 12 horas (43.200 segundos)
+        await asyncio.sleep(43200)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Inicializa o worker em background
+    worker_task = asyncio.create_task(periodic_vaccine_checker())
+    yield
+    # Finaliza no encerramento da aplicação
+    worker_task.cancel()
+    try:
+        await worker_task
+    except asyncio.CancelledError:
+        pass
+
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -10,6 +46,7 @@ app = FastAPI(
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
     docs_url=f"{settings.API_V1_STR}/docs",
     redoc_url=f"{settings.API_V1_STR}/redoc",
+    lifespan=lifespan,
 )
 
 # 1. Middleware de Cabeçalhos de Segurança (OWASP Top 10)

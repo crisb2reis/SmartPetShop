@@ -323,3 +323,4 @@ export const AddVaccineModal: React.FC<AddVaccineModalProps> = ({
     </div>
   );
 };
+
