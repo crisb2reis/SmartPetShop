@@ -1,0 +1,50 @@
+[
+  {
+    "epic": "Infra & Setup",
+    "title": "Configurar Docker Compose com PostgreSQL, FastAPI e React",
+    "description": "Criar o arquivo docker-compose.yml orquestrando os serviços de banco de dados PostgreSQL, backend FastAPI e frontend React, incluindo variáveis de ambiente e volumes persistentes.",
+    "labels": ["devops", "docker", "infra"]
+  },
+  {
+    "epic": "Backend Core",
+    "title": "Modelagem de Banco de Dados e Migrations (SQLAlchemy/Alembic)",
+    "description": "Criar os modelos de dados principais: Tutor (Cliente), Pet, Serviço (Banho, Tosa, Consulta), Agendamento e Histórico Médico/Vacinas.",
+    "labels": ["backend", "database", "sqlalchemy"]
+  },
+  {
+    "epic": "Backend Core",
+    "title": "Endpoints CRUD de Tutores e Pets",
+    "description": "Desenvolver rotas da API FastAPI para cadastrar, listar, atualizar e consultar tutores e seus respectivos pets com validações Pydantic.",
+    "labels": ["backend", "fastapi", "api"]
+  },
+  {
+    "epic": "Backend Core",
+    "title": "Módulo de Agendamento de Serviços",
+    "description": "Implementar controle de agenda com verificação de conflitos de horário para banho, tosa e consultas veterinárias.",
+    "labels": ["backend", "fastapi", "business-logic"]
+  },
+  {
+    "epic": "Agentes de IA",
+    "title": "Agente de Chatbot para Atendimento e Agendamento",
+    "description": "Criar serviço integrado ao Gemini para atendimento conversacional, permitindo aos clientes consultar horários, tirar dúvidas de serviços e solicitar agendamentos de forma automatizada.",
+    "labels": ["ai", "gemini", "chatbot", "agents"]
+  },
+  {
+    "epic": "Agentes de IA",
+    "title": "Agente Preditivo de Alertas e Recorrência",
+    "description": "Implementar worker/agente de background que analisa o histórico dos pets e dispara alertas inteligentes: vacinas vencendo e sugestão de retorno periódico para banho/tosa.",
+    "labels": ["ai", "alerts", "automation"]
+  },
+  {
+    "epic": "Frontend React",
+    "title": "Setup do Projeto React com Tailwind CSS",
+    "description": "Inicializar o frontend React moderno com Vite e Tailwind CSS, configurando o cliente HTTP (Axios/Fetch) para comunicação com a API FastAPI.",
+    "labels": ["frontend", "react", "ui"]
+  },
+  {
+    "epic": "Frontend React",
+    "title": "Dashboard de Agendamentos e Alertas do Dia",
+    "description": "Construir a tela principal com visão rápida dos pets agendados para o dia, status dos atendimentos e alertas preditivos pendentes.",
+    "labels": ["frontend", "react", "dashboard"]
+  }
+]
