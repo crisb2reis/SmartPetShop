@@ -17,6 +17,13 @@ class Settings(BaseSettings):
     # AI / Gemini
     GEMINI_API_KEY: str = ""
 
+    # WhatsApp Meta Cloud API
+    WHATSAPP_VERIFY_TOKEN: str = "smartpetshop_meta_webhook_token_2026"
+    WHATSAPP_APP_SECRET: str = ""
+    WHATSAPP_API_TOKEN: str = ""
+    WHATSAPP_PHONE_NUMBER_ID: str = ""
+    WHATSAPP_BUSINESS_ACCOUNT_ID: str = ""
+
     # CORS
     BACKEND_CORS_ORIGINS: list[str] = [
         "http://localhost:5173",

@@ -10,6 +10,7 @@ from app.models.health_record import HealthRecord
 from app.models.alert import Alert
 from app.models.chat import ChatSession, ChatMessage
 from app.models.vaccine import VaccineCatalog, VaccineBatch, PetVaccinationRecord
+from app.models.whatsapp import WhatsAppMessage
 
 __all__ = [
     "Base",
@@ -27,4 +28,5 @@ __all__ = [
     "VaccineCatalog",
     "VaccineBatch",
     "PetVaccinationRecord",
+    "WhatsAppMessage",
 ]

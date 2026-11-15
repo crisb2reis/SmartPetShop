@@ -142,3 +142,4 @@ Permitir que o atendente do pet shop assuma a conversa caso o cliente solicite o
 
 if __name__ == "__main__":
     main()
+
