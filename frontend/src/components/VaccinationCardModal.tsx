@@ -6,11 +6,9 @@ import {
   ShieldCheck,
   AlertTriangle,
   Clock,
-  User,
   Plus,
   FileBadge,
   Printer,
-  ChevronRight,
   Info
 } from 'lucide-react';
 import {

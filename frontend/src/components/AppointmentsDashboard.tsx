@@ -7,9 +7,7 @@ import {
   Play,
   CheckCircle,
   XCircle,
-  RefreshCw,
-  Search,
-  Filter
+  RefreshCw
 } from 'lucide-react';
 import {
   fetchAppointments,

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, Dog, Plus, Search, Phone, Mail, CheckCircle, AlertCircle, Pencil, Syringe } from 'lucide-react';
+import { User, Dog, Plus, Search, Phone, Pencil, Syringe, Loader2 } from 'lucide-react';
 import { fetchTutors, fetchPets, createTutor, createPet, Tutor, Pet } from '../services/api';
 import { EditTutorModal } from './EditTutorModal';
 import { EditPetModal } from './EditPetModal';
@@ -136,26 +136,38 @@ export const TutorsPetsView: React.FC = () => {
             Gestão de Tutores & Pets
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
-            Cadastros rápidos de novos clientes e seus animais para atendimento na recepção
+            Cadastre e edite tutores, gerencie seus animais e acesse a carteirinha de vacinação digital CFMV
           </p>
         </div>
 
         <div className="flex items-center space-x-2">
           <button
             onClick={() => setShowTutorForm(!showTutorForm)}
-            className="flex items-center space-x-1.5 text-xs font-semibold px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition-colors"
+            className="flex items-center space-x-1.5 text-xs font-semibold px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition-colors shadow-2xs"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Novo Tutor</span>
           </button>
           <button
             onClick={() => setShowPetForm(!showPetForm)}
-            className="flex items-center space-x-1.5 text-xs font-semibold px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white transition-colors"
+            className="flex items-center space-x-1.5 text-xs font-semibold px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white transition-colors shadow-2xs"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Novo Pet</span>
           </button>
         </div>
+      </div>
+
+      {/* Barra de Pesquisa */}
+      <div className="relative">
+        <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Buscar tutor por nome ou telefone..."
+          className="w-full pl-10 pr-4 py-2.5 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 shadow-2xs"
+        />
       </div>
 
       {message && (
@@ -274,7 +286,13 @@ export const TutorsPetsView: React.FC = () => {
       )}
 
       {/* Tutors & Pets List */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {loading ? (
+        <div className="flex flex-col items-center justify-center p-12 bg-white rounded-2xl border border-slate-200">
+          <Loader2 className="w-8 h-8 text-emerald-600 animate-spin mb-3" />
+          <p className="text-sm font-semibold text-slate-600">Carregando tutores e pets...</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredTutors.map((t) => {
           const tutorPets = pets.filter((p) => p.tutor_id === t.id);
           return (
@@ -296,9 +314,10 @@ export const TutorsPetsView: React.FC = () => {
                 <button
                   onClick={() => handleOpenEditTutor(t)}
                   title="Editar dados do tutor"
-                  className="p-1.5 text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors border border-transparent hover:border-emerald-200 shrink-0"
+                  className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 hover:text-emerald-800 rounded-lg border border-emerald-200 transition-colors shadow-2xs shrink-0"
                 >
-                  <Pencil className="w-3.5 h-3.5" />
+                  <Pencil className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Editar</span>
                 </button>
               </div>
 
@@ -328,21 +347,26 @@ export const TutorsPetsView: React.FC = () => {
                     {tutorPets.map((p) => (
                       <div
                         key={p.id}
-                        className="inline-flex items-center rounded-xl border border-slate-200 bg-slate-50/80 shadow-2xs overflow-hidden divide-x divide-slate-200"
+                        className="inline-flex items-center rounded-xl border border-slate-200 bg-slate-50/90 shadow-2xs overflow-hidden divide-x divide-slate-200"
                       >
+                        {/* Info do Pet */}
+                        <div className="px-2.5 py-1.5 text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+                          <Dog className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                          <span className="font-bold text-slate-800">{p.name}</span>
+                          <span className="text-[10px] text-slate-400 font-normal">
+                            ({p.breed || p.species})
+                          </span>
+                        </div>
+
                         {/* Botão de Editar Dados do Pet */}
                         <button
                           type="button"
                           onClick={() => handleOpenEditPet(p)}
-                          title="Clique para editar dados do pet"
-                          className="px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:text-emerald-800 hover:bg-emerald-50/70 transition-colors flex items-center gap-1.5"
+                          title={`Editar dados e tutor de ${p.name}`}
+                          className="px-2 py-1.5 text-[11px] font-semibold text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 transition-colors flex items-center gap-1"
                         >
-                          <Dog className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                          <span className="font-bold">{p.name}</span>
-                          <span className="text-[10px] text-slate-400 font-normal">
-                            ({p.breed || p.species})
-                          </span>
-                          <Pencil className="w-2.5 h-2.5 text-slate-400 hover:text-emerald-600 ml-0.5" />
+                          <Pencil className="w-3 h-3 text-slate-500" />
+                          <span>Editar</span>
                         </button>
 
                         {/* Botão de Ver Carteirinha de Vacinação */}
@@ -363,7 +387,16 @@ export const TutorsPetsView: React.FC = () => {
             </div>
           );
         })}
+
+        {filteredTutors.length === 0 && (
+          <div className="col-span-full bg-white rounded-2xl border border-slate-200 p-8 text-center">
+            <User className="w-10 h-10 text-slate-300 mx-auto mb-2" />
+            <p className="text-sm font-semibold text-slate-700">Nenhum tutor encontrado.</p>
+            <p className="text-xs text-slate-400 mt-1">Tente buscar por outro termo ou cadastre um novo tutor acima.</p>
+          </div>
+        )}
       </div>
+      )}
 
       {/* Modal de Edição de Tutor */}
       <EditTutorModal

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, RefreshCw, CheckCircle2, AlertTriangle, Sparkles, X } from 'lucide-react';
+import { Bell, RefreshCw, CheckCircle2, Sparkles, X } from 'lucide-react';
 import { fetchAlerts, runAlertScan, updateAlertStatus, AlertItem } from '../services/api';
 
 export const AlertsWidget: React.FC = () => {
