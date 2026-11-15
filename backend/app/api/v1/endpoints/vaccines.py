@@ -177,3 +177,4 @@ async def update_pet_vaccination(
         data=record_in,
         catalog=catalog
     )
+

@@ -203,3 +203,105 @@ export const updateAlertStatus = async (alertId: string, newStatus: string): Pro
   });
   return response.data;
 };
+
+// ============================================================
+// Vacinas & Carteirinha Digital (Conformidade CFMV)
+// ============================================================
+export interface VaccineCatalogItem {
+  id: string;
+  species: string;
+  name: string;
+  type: 'OBRIGATORIA' | 'OPCIONAL';
+  recommended_age_weeks: number;
+  doses_required: number;
+  booster_interval_days: number;
+  description?: string;
+}
+
+export interface VaccineBatchItem {
+  id: string;
+  vaccine_catalog_id: string;
+  batch_number: string;
+  manufacturer: string;
+  expiration_date: string;
+  active: boolean;
+}
+
+export interface VaccineRecordItem {
+  id: string;
+  tenant_id: string;
+  pet_id: string;
+  vaccine_catalog_id: string;
+  vaccine_batch_id?: string;
+  application_date: string;
+  next_due_date?: string;
+  vet_name: string;
+  vet_crmv: string;
+  clinic_id?: string;
+  status: 'APLICADA' | 'PENDENTE' | 'ATRASADA';
+  notes?: string;
+  vaccine_catalog?: VaccineCatalogItem;
+  vaccine_batch?: VaccineBatchItem;
+}
+
+export interface VaccineCardData {
+  pet_id: string;
+  pet_name: string;
+  species: string;
+  breed?: string;
+  total_applied: number;
+  due_soon_count: number;
+  overdue_count: number;
+  applied_records: VaccineRecordItem[];
+  upcoming_records: VaccineRecordItem[];
+  all_records: VaccineRecordItem[];
+}
+
+export const fetchVaccineCatalogs = async (species?: string): Promise<VaccineCatalogItem[]> => {
+  const params: Record<string, string> = {};
+  if (species) params.species = species;
+  const response = await api.get('/vaccine-catalogs/', { params });
+  return response.data;
+};
+
+export const fetchVaccineBatches = async (catalogId?: string): Promise<VaccineBatchItem[]> => {
+  const params: Record<string, string> = {};
+  if (catalogId) params.catalog_id = catalogId;
+  const response = await api.get('/vaccine-batches/', { params });
+  return response.data;
+};
+
+export const fetchPetVaccinations = async (petId: string): Promise<VaccineRecordItem[]> => {
+  const response = await api.get(`/pets/${petId}/vaccinations/`);
+  return response.data;
+};
+
+export const fetchPetVaccinationCard = async (petId: string): Promise<VaccineCardData> => {
+  const response = await api.get(`/pets/${petId}/vaccinations/card`);
+  return response.data;
+};
+
+export const createPetVaccination = async (
+  petId: string,
+  data: {
+    vaccine_catalog_id: string;
+    vaccine_batch_id?: string;
+    application_date: string;
+    next_due_date?: string;
+    vet_name: string;
+    vet_crmv: string;
+    notes?: string;
+  }
+): Promise<VaccineRecordItem> => {
+  const response = await api.post(`/pets/${petId}/vaccinations/`, data);
+  return response.data;
+};
+
+export const updatePetVaccination = async (
+  petId: string,
+  recordId: string,
+  data: Partial<VaccineRecordItem>
+): Promise<VaccineRecordItem> => {
+  const response = await api.put(`/pets/${petId}/vaccinations/${recordId}`, data);
+  return response.data;
+};

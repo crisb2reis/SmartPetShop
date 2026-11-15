@@ -100,3 +100,4 @@ class PetVaccinationCardResponse(BaseModel):
     all_records: List[PetVaccinationRecordResponse] = []
 
     model_config = ConfigDict(from_attributes=True)
+

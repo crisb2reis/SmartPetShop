@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { User, Dog, Plus, Search, Phone, Mail, CheckCircle, AlertCircle, Pencil } from 'lucide-react';
+import { User, Dog, Plus, Search, Phone, Mail, CheckCircle, AlertCircle, Pencil, Syringe } from 'lucide-react';
 import { fetchTutors, fetchPets, createTutor, createPet, Tutor, Pet } from '../services/api';
 import { EditTutorModal } from './EditTutorModal';
 import { EditPetModal } from './EditPetModal';
+import { VaccinationCardModal } from './VaccinationCardModal';
 
 export const TutorsPetsView: React.FC = () => {
   const [tutors, setTutors] = useState<Tutor[]>([]);
@@ -17,6 +18,10 @@ export const TutorsPetsView: React.FC = () => {
   // Edit pet modal state
   const [editingPet, setEditingPet] = useState<Pet | null>(null);
   const [isEditPetModalOpen, setIsEditPetModalOpen] = useState(false);
+
+  // Vaccination card modal state
+  const [vaccineCardPet, setVaccineCardPet] = useState<Pet | null>(null);
+  const [isVaccineCardOpen, setIsVaccineCardOpen] = useState(false);
 
   // Form states
   const [showTutorForm, setShowTutorForm] = useState(false);
@@ -108,6 +113,11 @@ export const TutorsPetsView: React.FC = () => {
   const handleEditPetSuccess = (updatedPet: Pet) => {
     setPets((prev) => prev.map((p) => (p.id === updatedPet.id ? updatedPet : p)));
     setMessage(`Dados do pet ${updatedPet.name} atualizados com sucesso!`);
+  };
+
+  const handleOpenVaccinationCard = (pet: Pet) => {
+    setVaccineCardPet(pet);
+    setIsVaccineCardOpen(true);
   };
 
   const filteredTutors = tutors.filter(
@@ -314,22 +324,38 @@ export const TutorsPetsView: React.FC = () => {
                 {tutorPets.length === 0 ? (
                   <p className="text-xs text-slate-400 italic">Nenhum pet vinculado a este tutor.</p>
                 ) : (
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="flex flex-wrap gap-2">
                     {tutorPets.map((p) => (
-                      <button
+                      <div
                         key={p.id}
-                        type="button"
-                        onClick={() => handleOpenEditPet(p)}
-                        title="Clique para editar os dados deste pet"
-                        className="group text-xs font-semibold bg-slate-50 hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 border border-slate-200 hover:border-emerald-300 px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 transition-all text-left shadow-2xs"
+                        className="inline-flex items-center rounded-xl border border-slate-200 bg-slate-50/80 shadow-2xs overflow-hidden divide-x divide-slate-200"
                       >
-                        <Dog className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                        <span className="font-bold">{p.name}</span>
-                        <span className="text-[10px] text-slate-400 font-normal">
-                          ({p.breed || p.species})
-                        </span>
-                        <Pencil className="w-2.5 h-2.5 text-slate-400 opacity-60 group-hover:opacity-100 group-hover:text-emerald-600 transition-opacity ml-0.5" />
-                      </button>
+                        {/* Botão de Editar Dados do Pet */}
+                        <button
+                          type="button"
+                          onClick={() => handleOpenEditPet(p)}
+                          title="Clique para editar dados do pet"
+                          className="px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:text-emerald-800 hover:bg-emerald-50/70 transition-colors flex items-center gap-1.5"
+                        >
+                          <Dog className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                          <span className="font-bold">{p.name}</span>
+                          <span className="text-[10px] text-slate-400 font-normal">
+                            ({p.breed || p.species})
+                          </span>
+                          <Pencil className="w-2.5 h-2.5 text-slate-400 hover:text-emerald-600 ml-0.5" />
+                        </button>
+
+                        {/* Botão de Ver Carteirinha de Vacinação */}
+                        <button
+                          type="button"
+                          onClick={() => handleOpenVaccinationCard(p)}
+                          title={`Abrir Carteirinha de Vacinação Digital de ${p.name}`}
+                          className="px-2 py-1.5 text-[11px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 hover:text-emerald-900 transition-colors flex items-center gap-1"
+                        >
+                          <Syringe className="w-3 h-3 text-emerald-600" />
+                          <span>Vacinas</span>
+                        </button>
+                      </div>
                     ))}
                   </div>
                 )}
@@ -360,6 +386,16 @@ export const TutorsPetsView: React.FC = () => {
           setEditingPet(null);
         }}
         onSuccess={handleEditPetSuccess}
+      />
+
+      {/* Modal da Carteirinha de Vacinação Digital */}
+      <VaccinationCardModal
+        isOpen={isVaccineCardOpen}
+        pet={vaccineCardPet}
+        onClose={() => {
+          setIsVaccineCardOpen(false);
+          setVaccineCardPet(null);
+        }}
       />
     </div>
   );
