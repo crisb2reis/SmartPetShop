@@ -199,35 +199,53 @@ async def get_or_create_whatsapp_session(
     phone: str,
     tutor: Optional[Tutor] = None
 ) -> ChatSession:
-    """Busca ou cria uma sessão de chat ativa para o canal WhatsApp."""
-    query = (
-        select(ChatSession)
-        .where(
-            ChatSession.channel == "whatsapp",
-            ChatSession.status.in_(["active", "human_required"])
-        )
-    )
+    """Busca ou cria uma sessão de chat ativa para o canal WhatsApp específica do tutor ou telefone."""
+    clean_phone = "".join(filter(str.isdigit, phone))
+
     if tutor:
-        query = query.where(ChatSession.tutor_id == tutor.id)
-
-    query = query.order_by(ChatSession.created_at.desc())
-    res = await db.execute(query)
-    session = res.scalars().first()
-
-    if not session:
-        # Busca tenant padrão
-        org_res = await db.execute(select(Organization.id).limit(1))
-        tenant_id = org_res.scalar_one_or_none()
-
-        session = ChatSession(
-            tenant_id=tutor.tenant_id if tutor else tenant_id,
-            tutor_id=tutor.id if tutor else None,
-            channel="whatsapp",
-            status="active"
+        query = (
+            select(ChatSession)
+            .where(
+                ChatSession.channel == "whatsapp",
+                ChatSession.tutor_id == tutor.id,
+                ChatSession.status.in_(["active", "human_required"])
+            )
+            .order_by(ChatSession.created_at.desc())
         )
-        db.add(session)
-        await db.commit()
-        await db.refresh(session)
+        res = await db.execute(query)
+        session = res.scalars().first()
+        if session:
+            return session
+    else:
+        # Quando não há tutor ainda cadastrado, busca sessão existente associada a este telefone
+        query = (
+            select(ChatSession)
+            .join(ChatMessage, ChatMessage.session_id == ChatSession.id)
+            .where(
+                ChatSession.channel == "whatsapp",
+                ChatSession.status.in_(["active", "human_required"]),
+                ChatMessage.metadata_info["from_phone"].as_string().ilike(f"%{clean_phone}%")
+            )
+            .order_by(ChatSession.created_at.desc())
+        )
+        res = await db.execute(query)
+        session = res.scalars().first()
+        if session:
+            return session
+
+    # Busca tenant padrão para criar nova sessão isolada
+    org_res = await db.execute(select(Organization.id).limit(1))
+    tenant_id = org_res.scalar_one_or_none()
+
+    session = ChatSession(
+        tenant_id=tutor.tenant_id if tutor else tenant_id,
+        tutor_id=tutor.id if tutor else None,
+        channel="whatsapp",
+        status="active"
+    )
+    db.add(session)
+    await db.commit()
+    await db.refresh(session)
 
     return session
 

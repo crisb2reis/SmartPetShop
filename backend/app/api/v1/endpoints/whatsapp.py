@@ -1,16 +1,20 @@
 import json
 import logging
-from typing import List, Optional
+from typing import List, Optional, Union
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status, Response
 from fastapi.responses import PlainTextResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.services import whatsapp_service
+from app.services.whatsapp_queue import whatsapp_queue
 from app.agents.chatbot_agent import chatbot_agent
 from app.schemas.whatsapp import (
     WhatsAppMessageResponse,
     WebhookProcessingResult,
+    WebhookAsyncQueuedResponse,
+    QueueStatusResponse,
+    JobStatusResponse,
     WhatsAppTestAgentRequest,
     WhatsAppTestAgentResponse,
     SendTextMessageRequest,
@@ -61,23 +65,26 @@ async def verify_webhook(
 
 @router.post(
     "/webhook",
-    response_model=WebhookProcessingResult,
+    response_model=Union[WebhookAsyncQueuedResponse, WebhookProcessingResult],
     status_code=status.HTTP_200_OK,
-    summary="Receber eventos e mensagens da Meta Cloud API",
-    description="Captura mensagens recebidas (texto, áudio, mídia) e atualizações de status enviadas pelo WhatsApp."
+    summary="Receber eventos e mensagens da Meta Cloud API (Processamento Assíncrono)",
+    description="Captura eventos da Meta, valida assinatura HMAC e enfileira imediatamente em background para resposta ultra-rápida (< 100ms)."
 )
 @router.post(
     "/webhook/",
-    response_model=WebhookProcessingResult,
+    response_model=Union[WebhookAsyncQueuedResponse, WebhookProcessingResult],
     include_in_schema=False
 )
 async def receive_webhook(
     request: Request,
+    sync: bool = Query(False, description="Se True, executa síncrono. Padrão False (processamento assíncrono via Fila/Worker)."),
     db: AsyncSession = Depends(get_db)
 ):
     """
-    Recebe o payload de eventos da Meta.
-    Valida a assinatura HMAC X-Hub-Signature-256 e grava a mensagem na tabela de auditoria com garantia de idempotência.
+    Recebe o payload de eventos da Meta Cloud API.
+    1. Valida a assinatura HMAC X-Hub-Signature-256 (SHA-256).
+    2. Em modo assíncrono (padrão): Enfileira o payload bruto na fila (Redis / Worker) e responde HTTP 200 imediatamente para a Meta.
+    3. O worker em background processa idempotência, executa o Agente de IA e despacha a resposta ao cliente.
     """
     body_bytes = await request.body()
     signature = request.headers.get("X-Hub-Signature-256")
@@ -99,16 +106,51 @@ async def receive_webhook(
             detail="Payload JSON malformado."
         )
 
-    # 3. Processamento de idempotência e gravação na tabela whatsapp_messages
-    result = await whatsapp_service.process_meta_webhook(db, payload)
+    # 3. Processamento síncrono (opcional para testes específicos)
+    if sync:
+        result = await whatsapp_service.process_meta_webhook(db, payload)
+        return WebhookProcessingResult(
+            status=result.get("status", "ok"),
+            messages_processed=result.get("messages_processed", 0),
+            statuses_processed=result.get("statuses_processed", 0),
+            duplicate_messages_skipped=result.get("duplicate_messages_skipped", 0),
+            details=result.get("details", [])
+        )
 
-    return WebhookProcessingResult(
-        status=result.get("status", "ok"),
-        messages_processed=result.get("messages_processed", 0),
-        statuses_processed=result.get("statuses_processed", 0),
-        duplicate_messages_skipped=result.get("duplicate_messages_skipped", 0),
-        details=result.get("details", [])
+    # 4. Processamento Assíncrono via Fila e Worker (Meta Standard < 1s)
+    job = await whatsapp_queue.enqueue(payload)
+    return WebhookAsyncQueuedResponse(
+        status="queued",
+        message="Payload enfileirado para processamento assíncrono com sucesso.",
+        job_id=job.job_id,
+        created_at=job.created_at
     )
+
+
+@router.get(
+    "/queue/status",
+    response_model=QueueStatusResponse,
+    summary="Status da fila e worker assíncrono do WhatsApp",
+    description="Retorna métricas operacionais da fila de processamento (broker ativo, tamanho da fila, tarefas concluídas e falhas)."
+)
+async def get_queue_status():
+    return whatsapp_queue.get_stats()
+
+
+@router.get(
+    "/queue/jobs/{job_id}",
+    response_model=JobStatusResponse,
+    summary="Consultar status de um job enfileirado",
+    description="Retorna o status, tentativas, timestamp e resultado da execução de um job assíncrono."
+)
+async def get_job_status(job_id: str):
+    job = whatsapp_queue.get_job(job_id)
+    if not job:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Job {job_id} não encontrado."
+        )
+    return job
 
 
 @router.get(

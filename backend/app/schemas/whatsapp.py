@@ -84,4 +84,34 @@ class SendMessageResult(BaseModel):
     details: Optional[Dict[str, Any]] = None
 
 
+class WebhookAsyncQueuedResponse(BaseModel):
+    status: str = "queued"
+    message: str = "Payload enfileirado para processamento assíncrono com sucesso."
+    job_id: str
+    created_at: str
+
+
+class QueueStatusResponse(BaseModel):
+    is_running: bool
+    broker: str
+    redis_connected: bool
+    in_memory_queue_size: int
+    total_processed: int
+    total_failed: int
+    total_retried: int
+    stored_jobs_count: int
+
+
+class JobStatusResponse(BaseModel):
+    job_id: str
+    status: str
+    attempts: int
+    max_retries: int
+    created_at: str
+    updated_at: str
+    error: Optional[str] = None
+    result: Optional[Dict[str, Any]] = None
+
+
+
 

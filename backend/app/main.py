@@ -7,6 +7,7 @@ from app.core.config import settings
 from app.core.security import SecurityHeadersMiddleware, RateLimitMiddleware
 from app.core.database import AsyncSessionLocal
 from app.agents.alert_agent import predictive_alert_agent
+from app.services.whatsapp_queue import whatsapp_queue
 from app.api.v1.router import api_router
 
 logger = logging.getLogger("smartpetshop.scheduler")
@@ -29,13 +30,22 @@ async def periodic_vaccine_checker():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Inicializa o worker em background
-    worker_task = asyncio.create_task(periodic_vaccine_checker())
+    # Inicializa o worker em background do scheduler de vacinas
+    vaccine_task = asyncio.create_task(periodic_vaccine_checker())
+
+    # Inicializa o worker assíncrono da fila de eventos do WhatsApp (Fila & IA)
+    if settings.WHATSAPP_WORKER_ENABLED:
+        await whatsapp_queue.start_worker()
+
     yield
-    # Finaliza no encerramento da aplicação
-    worker_task.cancel()
+
+    # Finaliza workers no encerramento da aplicação
+    if settings.WHATSAPP_WORKER_ENABLED:
+        await whatsapp_queue.stop_worker()
+
+    vaccine_task.cancel()
     try:
-        await worker_task
+        await vaccine_task
     except asyncio.CancelledError:
         pass
 
