@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     WHATSAPP_API_TOKEN: str = ""
     WHATSAPP_PHONE_NUMBER_ID: str = ""
     WHATSAPP_BUSINESS_ACCOUNT_ID: str = ""
+    META_GRAPH_API_VERSION: str = "v21.0"
 
     # CORS
     BACKEND_CORS_ORIGINS: list[str] = [

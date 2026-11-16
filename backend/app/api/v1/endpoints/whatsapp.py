@@ -12,7 +12,12 @@ from app.schemas.whatsapp import (
     WhatsAppMessageResponse,
     WebhookProcessingResult,
     WhatsAppTestAgentRequest,
-    WhatsAppTestAgentResponse
+    WhatsAppTestAgentResponse,
+    SendTextMessageRequest,
+    SendInteractiveButtonsRequest,
+    SendTemplateRequest,
+    SendVaccineReminderRequest,
+    SendMessageResult
 )
 
 router = APIRouter()
@@ -152,4 +157,89 @@ async def process_whatsapp_message(
         handoff_requested=result.get("handoff_requested", False),
         status=result.get("status", "active")
     )
+
+
+# ============================================================================
+# Endpoints de Envio de Mensagens (Outbound via Meta Cloud API)
+# ============================================================================
+
+@router.post(
+    "/send-text",
+    response_model=SendMessageResult,
+    summary="Enviar mensagem de texto no WhatsApp",
+    description="Dispara mensagem de texto simples ou formatada para o cliente via Meta Cloud API."
+)
+async def send_text(
+    payload: SendTextMessageRequest,
+    db: AsyncSession = Depends(get_db)
+):
+    res = await whatsapp_service.send_text_message(
+        db=db,
+        phone=payload.phone,
+        text=payload.text
+    )
+    return SendMessageResult(**res)
+
+
+@router.post(
+    "/send-interactive",
+    response_model=SendMessageResult,
+    summary="Enviar mensagem com botões interativos no WhatsApp",
+    description="Dispara mensagem com até 3 botões rápidos de ação (Quick Replies) via Meta Cloud API."
+)
+async def send_interactive(
+    payload: SendInteractiveButtonsRequest,
+    db: AsyncSession = Depends(get_db)
+):
+    buttons_dict = [{"id": b.id, "title": b.title} for b in payload.buttons]
+    res = await whatsapp_service.send_interactive_buttons(
+        db=db,
+        phone=payload.phone,
+        body_text=payload.body_text,
+        buttons=buttons_dict,
+        header_text=payload.header_text,
+        footer_text=payload.footer_text
+    )
+    return SendMessageResult(**res)
+
+
+@router.post(
+    "/send-template",
+    response_model=SendMessageResult,
+    summary="Enviar template oficial HSM aprovado na Meta",
+    description="Dispara mensagem baseada em template aprovado fora da janela de atendimento de 24h."
+)
+async def send_template(
+    payload: SendTemplateRequest,
+    db: AsyncSession = Depends(get_db)
+):
+    res = await whatsapp_service.send_template_message(
+        db=db,
+        phone=payload.phone,
+        template_name=payload.template_name,
+        language_code=payload.language_code,
+        parameters=payload.parameters
+    )
+    return SendMessageResult(**res)
+
+
+@router.post(
+    "/send-vaccine-reminder",
+    response_model=SendMessageResult,
+    summary="Disparar alerta oficial de reforço de vacina no WhatsApp",
+    description="Dispara notificação de vacina a vencer ou atrasada com botões interativos para agendamento imediato."
+)
+async def send_vaccine_reminder(
+    payload: SendVaccineReminderRequest,
+    db: AsyncSession = Depends(get_db)
+):
+    res = await whatsapp_service.send_vaccine_reminder_message(
+        db=db,
+        phone=payload.phone,
+        pet_name=payload.pet_name,
+        vaccine_name=payload.vaccine_name,
+        due_date=payload.due_date,
+        alert_type=payload.alert_type
+    )
+    return SendMessageResult(**res)
 

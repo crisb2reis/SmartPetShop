@@ -41,3 +41,47 @@ class WhatsAppTestAgentResponse(BaseModel):
     status: str
 
 
+class SendTextMessageRequest(BaseModel):
+    phone: str = Field(..., description="Telefone do destinatário em formato E.164 (ex: 5511999998888)")
+    text: str = Field(..., min_length=1, description="Texto da mensagem (suporta formatação WhatsApp: *negrito*, listas)")
+
+
+class QuickReplyButton(BaseModel):
+    id: str = Field(..., description="Identificador único da ação do botão")
+    title: str = Field(..., max_length=20, description="Título do botão (máximo 20 caracteres)")
+
+
+class SendInteractiveButtonsRequest(BaseModel):
+    phone: str = Field(..., description="Telefone do destinatário em formato E.164")
+    body_text: str = Field(..., description="Texto principal da mensagem")
+    buttons: List[QuickReplyButton] = Field(..., min_length=1, max_length=3, description="Lista de 1 a 3 botões interativos")
+    header_text: Optional[str] = Field(None, description="Cabeçalho opcional da mensagem")
+    footer_text: Optional[str] = Field("SmartPetShop 🐾", description="Rodapé opcional da mensagem")
+
+
+class SendTemplateRequest(BaseModel):
+    phone: str = Field(..., description="Telefone do destinatário em formato E.164")
+    template_name: str = Field(..., description="Nome do template HSM aprovado na Meta")
+    language_code: str = Field("pt_BR", description="Código do idioma (ex: pt_BR)")
+    parameters: List[str] = Field(default=[], description="Parâmetros posicionais de texto para o corpo do template")
+
+
+class SendVaccineReminderRequest(BaseModel):
+    phone: str = Field(..., description="Telefone do tutor")
+    pet_name: str = Field(..., description="Nome do pet")
+    vaccine_name: str = Field(..., description="Nome da vacina (ex: V10, Antirrábica)")
+    due_date: str = Field(..., description="Data de vencimento do reforço (DD/MM/AAAA)")
+    alert_type: str = Field("vaccine_d7", description="Tipo do alerta: vaccine_d30, vaccine_d7, vaccine_d0, vaccine_overdue")
+
+
+class SendMessageResult(BaseModel):
+    success: bool
+    message_id: str
+    status: str
+    recipient: str
+    mode: str = "simulation" # meta_api ou simulation
+    error: Optional[str] = None
+    details: Optional[Dict[str, Any]] = None
+
+
+
